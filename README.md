@@ -45,7 +45,7 @@ The Token-Based Authentication (V1) project is a full-stack authentication syste
 1. Clone the repository:
    ```bash
    git clone https://github.com/anthonyc-dev/my-template.git
-   cd my-template/token-based-authentication-v1/client
+   cd my-template/token-based-authentication-v1/frontend
    ```
 
 
@@ -122,7 +122,7 @@ token-based-authentication-v1/
 │   ├── tsconfig.json
 │   ├── vite.config.ts
 │   ├── .env
-├── server/
+├── backend/
 │   ├── src/
 │   │   ├── models/
 │   │   │   ├── User.ts

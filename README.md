@@ -49,44 +49,65 @@ The Token-Based Authentication (V1) project is a full-stack authentication syste
    ```
 
 
-### Install dependencies
+1. Install dependencies
    ```bash
     npm install
    ```
-or
+   or
 
    ```bash
    yarn install
    ```
 
 
-###Set up environment variables:Create a .env file in the client directory:VITE_API_URL=http://localhost:5000/api
+3. Set up environment variables: Create a .env file in the client directory:VITE_API_URL=http://localhost:5000/api
+   ```plain
+   VITE_API_URL=http://localhost:5000/api
+   ```
 
-
-Start the development server:npm run dev
-
-oryarn dev
-
-
-
-Backend
-
-Navigate to the backend directory:cd my-template/token-based-authentication-v1/server
-
-
-Install dependencies:npm install
-
-
-Set up environment variables:Create a .env file in the server directory:MONGO_URI=mongodb://localhost:27017/auth-db
-JWT_SECRET=your_jwt_secret_key
-PORT=5000
-
-
-Start the backend server:npm run start
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   or
+   ```bash
+   yarn dev
+   ```
 
 
 
-Project Structure
+### Backend
+
+1. Navigate to the backend directory:
+   ```bash
+   cd my-template/token-based-authentication-v1/backend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+
+3. Set up environment variables:Create a .env file in the server directory:
+   ```bash
+    DATABASE_URL=mongodb:your_databse
+    JWT_SECRET=your_jwt_secret_key
+    PORT=5000
+   ```
+
+
+
+3. Start the backend server:
+
+   ```bash
+   npm run start
+   ```
+
+
+
+### Project Structure
+---
 token-based-authentication-v1/
 ├── client/
 │   ├── src/
@@ -113,6 +134,7 @@ token-based-authentication-v1/
 │   ├── .env
 │   ├── package.json
 ├── README.md
+---
 
 Frontend Authentication
 AuthContext

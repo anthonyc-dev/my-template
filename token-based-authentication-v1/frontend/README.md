@@ -28,8 +28,8 @@ This README focuses on the authentication-related components: `authContext.tsx`,
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/anthonyc-dev/Automated-students-clearance-system.git
-   cd Automated-students-clearance-system
+   git clone https://github.com/anthonyc-dev/my-template.git
+   cd my-template/frontend
    ```
 2. Install dependencies:
    ```bash
@@ -57,12 +57,14 @@ This README focuses on the authentication-related components: `authContext.tsx`,
 ```
 Automated-students-clearance-system/
 ├── src/
-│   ├── components/
-│   │   ├── Login.tsx
-│   │   ├── Register.tsx
-│   ├── context/
+│   ├── authentication/
 │   │   ├── authContext.tsx
+│   ├── components/
+│   │   ├── ProtectedRoutes.tsx
 │   ├── pages/
+│   │   ├── auth/
+│   │   ├──── Login.tsx
+│   │   ├──── Register.tsx
 │   ├── App.tsx
 │   ├── main.tsx
 ├── eslint.config.js
@@ -107,63 +109,191 @@ const App = () => {
 
 **Code** (assumed structure):
 ```tsx
-import { createContext, useContext, useState, useEffect } from 'react';
+import axiosInstance from "@/api/axios";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
+// Context type
 interface AuthContextType {
-  user: { email: string; role: string } | null;
+  accessToken: string | null;
+  role?: string;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  isAuthenticated: boolean;
+  registerUser: (
+    studentId: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    phoneNumber: string,
+    password: string
+  ) => Promise<void>;
+  logout: () => Promise<void>;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 }
 
+// Create Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<{ email: string; role: string } | null>(null);
+// Provider
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [accessToken, setAccessToken] = useState<string | null>(
+    () => localStorage.getItem("accessToken") || null
+  );
+  const [role, setRole] = useState<string | undefined>(
+    () => localStorage.getItem("role") || undefined
+  );
+  const [loading, setLoading] = useState(false);
+
+  // Login
+  const login = async (email: string, password: string) => {
+    const res = await axiosInstance.post("/auth/login", { email, password });
+    const token = res.data.accessToken;
+    const userRole = res.data.user?.role;
+
+    setAccessToken(token);
+    setRole(userRole);
+    localStorage.setItem("accessToken", token);
+    localStorage.setItem("role", userRole);
+
+    console.log("Access Token:", token);
+
+    console.log("Login successful, role:", userRole);
+  };
+
+  // Register
+  const registerUser = async (
+    studentId: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    phoneNumber: string,
+    password: string
+  ) => {
+    try {
+      await axiosInstance.post("/auth/register", {
+        studentId,
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        password,
+        role: "clearingOfficer" as const,
+      });
+    } catch (err: any) {
+      const { status } = err.response || {};
+      if (status === 400) {
+        toast.error(err?.response?.data?.message || "Registration failed.");
+      }
+      throw err;
+    }
+  };
+
+  // Logout
+  const logout = async () => {
+    await axiosInstance.post("/auth/logout");
+    setAccessToken(null);
+    setRole(undefined);
+    localStorage.clear();
+  };
+
+  // Refresh token on mount
+  const refreshAccessToken = async () => {
+    try {
+      const res = await axiosInstance.post(
+        "/auth/refresh-token",
+        {},
+        { withCredentials: true }
+      );
+      const token = res.data.accessToken;
+      setAccessToken(token);
+      localStorage.setItem("accessToken", token);
+    } catch (err) {
+      setAccessToken(null);
+      localStorage.clear();
+    }
+  };
 
   useEffect(() => {
-    // Check for existing session (e.g., from localStorage)
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    refreshAccessToken();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    // Replace with actual API call
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await response.json();
-    if (response.ok) {
-      setUser(data.user);
-      localStorage.setItem('user', JSON.stringify(data.user));
-    } else {
-      throw new Error(data.message);
-    }
-  };
+  // Auto-attach token to requests interceptors
+  useEffect(() => {
+    const responseIntercept = axiosInstance.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config;
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
-  };
+        // ⛔ Don't retry on login or register failure
+        if (
+          originalRequest.url.includes("/auth/login") ||
+          originalRequest.url.includes("/auth/register")
+        ) {
+          return Promise.reject(error);
+        }
+
+        // Prevent infinite retry loop
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+
+          try {
+            const res = await axios.post(
+              "/auth/refresh-token",
+              {},
+              { withCredentials: true }
+            );
+
+            const newAccessToken = res.data.accessToken;
+            setAccessToken(newAccessToken);
+            localStorage.setItem("accessToken", newAccessToken);
+
+            // Set new token in header and retry request
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return axiosInstance(originalRequest);
+          } catch (refreshError) {
+            await logout();
+            toast.error("Session expired. Please log in again.");
+            window.location.href = "/login";
+            window.location.reload();
+          }
+        }
+
+        return Promise.reject(error);
+      }
+    );
+
+    return () => axiosInstance.interceptors.response.eject(responseIntercept);
+  }, [accessToken]);
+
+  console.log("AuthProvider initialized with accessToken:", accessToken);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider
+      value={{
+        accessToken,
+        login,
+        registerUser,
+        logout,
+        role,
+        loading,
+        setLoading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
+// Hook
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 };
+
 ```
 
 ### Login Component
@@ -177,54 +307,65 @@ The `Login.tsx` component provides a form for users to authenticate with their c
 
 **Example**:
 ```tsx
-import { useState } from 'react';
-import { useAuth } from '../context/authContext';
+import { useAuth } from "@/authentication/AuthContext";
+//import...
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { login } = useAuth();
+export default function Login() {
+  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSuccessModalVisible, setIsSuccessModalVisible] =
+    useState<boolean>(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const navigate = useNavigate();
+  const { login, role } = useAuth();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginData>({
+    resolver: zodResolver(loginSchema),
+    mode: "onTouched",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: LoginData) => {
+    setIsLoading(true);
+    setError("");
+
     try {
-      await login(email, password);
-    } catch (err) {
-      setError('Invalid credentials');
+      await login(data.email, data.password);
+
+      setIsSuccessModalVisible(true);
+    } catch (error: any) {
+      if (error.response) {
+        const { status } = error.response;
+
+        if (status === 401 || status === 404 || status === 400) {
+          setError(
+            error.response.data?.error || "Wrong credentials. Please try again."
+          );
+        }
+      } else if (error.request) {
+        setError("Network error. Please check your connection and try again.");
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          className="w-full p-2 border rounded"
-          required
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          className="w-full p-2 border rounded"
-          required
-        />
-        <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded">
-          Login
-        </button>
-      </form>
+    <div className="min-h-screen flex">
+     //code...
     </div>
   );
-};
+}
 
-export default Login;
 ```
 
 ### Register Component
@@ -237,73 +378,73 @@ The `Register.tsx` component allows new users (primarily students) to create acc
 
 **Example**:
 ```tsx
-import { useState } from 'react';
-import { useAuth } from '../context/authContext';
+import { useAuth } from "@/authentication/AuthContext";
+//import...
 
-const Register = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student');
-  const [error, setError] = useState('');
-  const { login } = useAuth(); // Assuming registration auto-logs in
+export default function Register() {
+  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSuccessModalVisible, setIsSuccessModalVisible] =
+    useState<boolean>(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const navigate = useNavigate();
+  const { registerUser, role } = useAuth();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    reset,
+  } = useForm<RegisterData>({
+    resolver: zodResolver(registerSchema),
+    mode: "onTouched",
+  });
+
+  const onSubmit = async (data: RegisterData) => {
+    setIsLoading(true);
+    setError("");
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, role }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        await login(email, password); // Auto-login after registration
+      await registerUser(
+        data.studentId,
+        data.firstName,
+        data.lastName,
+        data.email,
+        data.phoneNumber,
+        data.password
+      );
+      setIsSuccessModalVisible(true);
+      reset();
+    } catch (error: any) {
+      if (error?.response) {
+        const { status } = error.response;
+        if (status === 400) {
+          setError(
+            error.response.data?.error ||
+              "Registration failed. Please try again later."
+          );
+        } else {
+          setError("Registration failed. Please try again later.");
+        }
+      } else if (error?.request) {
+        setError("Network error. Please check your connection and try again.");
       } else {
-        throw new Error(data.message);
+        setError("An unexpected error occurred. Please try again.");
       }
-    } catch (err) {
-      setError('Registration failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const passwordValue = watch("password");
+
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Register</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          className="w-full p-2 border rounded"
-          required
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          className="w-full p-2 border rounded"
-          required
-        />
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          className="w-full p-2 border rounded"
-        >
-          <option value="student">Student</option>
-          {/* Admin and officer roles may be restricted */}
-        </select>
-        <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded">
-          Register
-        </button>
-      </form>
+    <div className="min-h-screen flex">
+     //code...
     </div>
   );
-};
+}
 
-export default Register;
 ```
 
 ## Usage

@@ -345,4 +345,3 @@ export default Register;
 
 ## License
 © 2025 GitHub, Inc. All rights reserved.
-```

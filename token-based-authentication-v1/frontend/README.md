@@ -1,52 +1,63 @@
-Automated Students Clearance System
-Overview
-The Automated Students Clearance System is a web application built with React, Vite, and TypeScript to streamline the student clearance process in educational institutions. It provides role-based access for admins, clearing officers, and students, enabling efficient management of clearance requests, approvals, and status tracking. The application uses modern authentication mechanisms to secure user access.
-This README focuses on the authentication-related components: authContext.tsx, Login, and Register.
-Table of Contents
+The README content has already been provided in the previous response as a markdown artifact. Below, I'll reproduce the exact README content as a code block in markdown format, as requested. This is the same detailed documentation for the **Automated Students Clearance System** focusing on `authContext.tsx`, `Login`, and `Register` components, as originally shared.
 
-Prerequisites
-Installation
-Project Structure
-Authentication Overview
-AuthContext
-Login Component
-Register Component
+```markdown
+# Automated Students Clearance System
 
+## Overview
+The Automated Students Clearance System is a web application built with **React**, **Vite**, and **TypeScript** to streamline the student clearance process in educational institutions. It provides role-based access for admins, clearing officers, and students, enabling efficient management of clearance requests, approvals, and status tracking. The application uses modern authentication mechanisms to secure user access.
 
-Usage
-Contributing
-License
+This README focuses on the authentication-related components: `authContext.tsx`, `Login`, and `Register`.
 
-Prerequisites
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Project Structure](#project-structure)
+- [Authentication Overview](#authentication-overview)
+  - [AuthContext](#authcontext)
+  - [Login Component](#login-component)
+  - [Register Component](#register-component)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-Node.js: Version 18.x or higher
-npm or yarn: For package management
-Git: For version control
-Backend API: A compatible backend API (e.g., Node.js/Express, Firebase) for authentication and data management
-TypeScript: For type-safe development
-ESLint: Configured with TypeScript and React-specific rules
+## Prerequisites
+- **Node.js**: Version 18.x or higher
+- **npm** or **yarn**: For package management
+- **Git**: For version control
+- **Backend API**: A compatible backend API (e.g., Node.js/Express, Firebase) for authentication and data management
+- **TypeScript**: For type-safe development
+- **ESLint**: Configured with TypeScript and React-specific rules
 
-Installation
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/anthonyc-dev/Automated-students-clearance-system.git
+   cd Automated-students-clearance-system
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+   or
+   ```bash
+   yarn install
+   ```
+3. Set up environment variables:
+   Create a `.env` file in the root directory and add necessary configurations, such as:
+   ```
+   VITE_API_URL=http://your-backend-api-url
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   or
+   ```bash
+   yarn dev
+   ```
 
-Clone the repository:git clone https://github.com/anthonyc-dev/Automated-students-clearance-system.git
-cd Automated-students-clearance-system
-
-
-Install dependencies:npm install
-
-oryarn install
-
-
-Set up environment variables:Create a .env file in the root directory and add necessary configurations, such as:VITE_API_URL=http://your-backend-api-url
-
-
-Start the development server:npm run dev
-
-oryarn dev
-
-
-
-Project Structure
+## Project Structure
+```
 Automated-students-clearance-system/
 ├── src/
 │   ├── components/
@@ -62,18 +73,21 @@ Automated-students-clearance-system/
 ├── vite.config.ts
 ├── .env
 ├── README.md
+```
 
-Authentication Overview
-AuthContext
-The authContext.tsx file provides a React Context for managing authentication state across the application. It handles user sessions, role-based access, and authentication-related API calls.
-Key Features:
+## Authentication Overview
 
-Stores user data (e.g., email, role, token).
-Provides methods for login, logout, and checking authentication status.
-Supports role-based access control (admin, clearing officer, student).
-Persists authentication state using browser storage (e.g., localStorage).
+### AuthContext
+The `authContext.tsx` file provides a React Context for managing authentication state across the application. It handles user sessions, role-based access, and authentication-related API calls.
 
-Example Usage:
+**Key Features**:
+- Stores user data (e.g., email, role, token).
+- Provides methods for login, logout, and checking authentication status.
+- Supports role-based access control (admin, clearing officer, student).
+- Persists authentication state using browser storage (e.g., localStorage).
+
+**Example Usage**:
+```tsx
 import { useAuth } from './context/authContext';
 
 const App = () => {
@@ -92,8 +106,10 @@ const App = () => {
     </div>
   );
 };
+```
 
-Code (assumed structure):
+**Code** (assumed structure):
+```tsx
 import { createContext, useContext, useState, useEffect } from 'react';
 
 interface AuthContextType {
@@ -151,17 +167,19 @@ export const useAuth = () => {
   }
   return context;
 };
+```
 
-Login Component
-The Login.tsx component provides a form for users to authenticate with their credentials. It supports login for admins, clearing officers, and students.
-Key Features:
+### Login Component
+The `Login.tsx` component provides a form for users to authenticate with their credentials. It supports login for admins, clearing officers, and students.
 
-Form validation for email and password.
-Error handling for failed login attempts.
-Integration with AuthContext for state management.
-Responsive design using Tailwind CSS.
+**Key Features**:
+- Form validation for email and password.
+- Error handling for failed login attempts.
+- Integration with `AuthContext` for state management.
+- Responsive design using Tailwind CSS.
 
-Example:
+**Example**:
+```tsx
 import { useState } from 'react';
 import { useAuth } from '../context/authContext';
 
@@ -210,16 +228,18 @@ const Login = () => {
 };
 
 export default Login;
+```
 
-Register Component
-The Register.tsx component allows new users (primarily students) to create accounts. Admins and clearing officers may have restricted registration managed by the backend.
-Key Features:
+### Register Component
+The `Register.tsx` component allows new users (primarily students) to create accounts. Admins and clearing officers may have restricted registration managed by the backend.
 
-Form validation for email, password, and additional fields (e.g., role).
-Integration with AuthContext for registration logic.
-Responsive design with Tailwind CSS.
+**Key Features**:
+- Form validation for email, password, and additional fields (e.g., role).
+- Integration with `AuthContext` for registration logic.
+- Responsive design with Tailwind CSS.
 
-Example:
+**Example**:
+```tsx
 import { useState } from 'react';
 import { useAuth } from '../context/authContext';
 
@@ -287,53 +307,47 @@ const Register = () => {
 };
 
 export default Register;
+```
 
-Usage
+## Usage
+1. **Access the Application**:
+   - Open the app in your browser (e.g., `http://localhost:5173` for development).
+   - Use the provided credentials for testing:
+     - **Admin**: `anthony.dev@gmail.com` / `Anthony@123`
+     - **Clearing Officer**: `cawasa@gmail.com` / `Cawasa@123`
+     - **Student**: `marjoe@gmail.com` / `Marjoe@123`
 
-Access the Application:
+2. **Login**:
+   - Navigate to the login page.
+   - Enter credentials and submit to access role-specific dashboards.
 
-Open the app in your browser (e.g., http://localhost:5173 for development).
-Use the provided credentials for testing:
-Admin: anthony.dev@gmail.com / Anthony@123
-Clearing Officer: cawasa@gmail.com / Cawasa@123
-Student: marjoe@gmail.com / Marjoe@123
+3. **Register**:
+   - Navigate to the registration page.
+   - Fill in the required fields (email, password, role) to create a new account.
 
+4. **Role-Based Features**:
+   - **Admin**: Manage users, view all clearance requests, and approve/reject requests.
+   - **Clearing Officer**: Review and process clearance requests for specific departments.
+   - **Student**: Submit clearance requests and track their status.
 
+## Contributing
+1. Fork the repository.
+2. Create a feature branch:
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+3. Commit your changes:
+   ```bash
+   git commit -m "Add your feature"
+   ```
+4. Push to the branch:
+   ```bash
+   git push origin feature/your-feature
+   ```
+5. Open a pull request.
 
-
-Login:
-
-Navigate to the login page.
-Enter credentials and submit to access role-specific dashboards.
-
-
-Register:
-
-Navigate to the registration page.
-Fill in the required fields (email, password, role) to create a new account.
-
-
-Role-Based Features:
-
-Admin: Manage users, view all clearance requests, and approve/reject requests.
-Clearing Officer: Review and process clearance requests for specific departments.
-Student: Submit clearance requests and track their status.
-
-
-
-Contributing
-
-Fork the repository.
-Create a feature branch:git checkout -b feature/your-feature
-
-
-Commit your changes:git commit -m "Add your feature"
-
-
-Push to the branch:git push origin feature/your-feature
-
-
-Open a pull request.
-
-License
+## License
 © 2025 GitHub, Inc. All rights reserved.
+```
+
+This markdown code block contains the complete README as requested, covering the project overview, setup instructions, authentication components (`authContext.tsx`, `Login.tsx`, `Register.tsx`), and usage details. You can copy this content into a `README.md` file in your project root directory. If you need further modifications or additional sections, please let me know!

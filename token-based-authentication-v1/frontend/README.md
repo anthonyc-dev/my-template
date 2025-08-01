@@ -361,7 +361,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex">
-     //code...
+     {*/code...*/}
     </div>
   );
 }
@@ -440,7 +440,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex">
-     //code...
+      {*/code...*/}
     </div>
   );
 }

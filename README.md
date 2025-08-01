@@ -107,7 +107,7 @@ The Token-Based Authentication (V1) project is a full-stack authentication syste
 
 
 ### Project Structure
----
+```text
 token-based-authentication-v1/
 ├── client/
 │   ├── src/
@@ -134,18 +134,19 @@ token-based-authentication-v1/
 │   ├── .env
 │   ├── package.json
 ├── README.md
----
+```
 
-Frontend Authentication
-AuthContext
+### Frontend Authentication
+### AuthContext
 The authContext.tsx manages authentication state using React Context, handling JWT tokens and user data.
-Key Features:
+### Key Features:
 
 Stores user data (email, role) and JWT token in localStorage.
 Provides login, logout, and isAuthenticated methods.
 Validates tokens on app load.
 
-Code:
+### Code:
+```ts
 import { createContext, useContext, useState, useEffect } from 'react';
 
 interface AuthContextType {
@@ -209,16 +210,18 @@ export const useAuth = () => {
   }
   return context;
 };
+```
 
-Login Component
+### Login Component
 The Login.tsx component provides a form for users to authenticate, receiving a JWT upon success.
-Key Features:
+### Key Features:
 
 Validates email and password.
 Displays error messages for invalid credentials.
 Uses Tailwind CSS for styling.
 
-Code:
+### Code:
+```ts
 import { useState } from 'react';
 import { useAuth } from '../context/authContext';
 
@@ -267,16 +270,18 @@ const Login = () => {
 };
 
 export default Login;
+```
 
-Register Component
+### Register Component
 The Register.tsx component allows users to create accounts, receiving a JWT after registration.
-Key Features:
+### Key Features:
 
 Validates email, password, and role.
 Auto-logs in users post-registration.
 Styled with Tailwind CSS.
 
-Code:
+### Code:
+```ts
 import { useState } from 'react';
 import { useAuth } from '../context/authContext';
 
@@ -344,8 +349,9 @@ const Register = () => {
 };
 
 export default Register;
+```
 
-Backend Authentication
+### Backend Authentication
 User Model
 The User.ts model defines the schema for users in MongoDB using Mongoose.
 Code:

@@ -352,9 +352,10 @@ export default Register;
 ```
 
 ### Backend Authentication
-User Model
+### User Model
 The User.ts model defines the schema for users in MongoDB using Mongoose.
-Code:
+### Code:
+```ts
 import mongoose, { Schema, Document } from 'mongoose';
 
 interface IUser extends Document {
@@ -416,10 +417,12 @@ router.post('/login', async (req: Request, res: Response) => {
 });
 
 export default router;
+```
 
-Middleware
+### Middleware
 The authMiddleware.ts verifies JWTs for protected routes.
-Code:
+### Code:
+```ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
@@ -436,10 +439,11 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     res.status(401).json({ message: 'Invalid token' });
   }
 };
-
-Server Setup
+```
+### Server Setup
 The index.ts file initializes the Express server and connects to MongoDB.
-Code:
+### Code:
+```ts
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -461,46 +465,48 @@ mongoose.connect(process.env.MONGO_URI!).then(() => {
 }).catch((error) => {
   console.error('MongoDB connection error:', error);
 });
+```
 
-Token-Based Authentication Flow
+### Token-Based Authentication Flow
 
-Registration:
+### Registration:
 
 Frontend sends user data to /api/auth/register.
 Backend hashes the password, saves the user, and issues a JWT.
 Frontend stores the token and user data in localStorage.
 
 
-Login:
+### Login:
 
 Frontend sends credentials to /api/auth/login.
 Backend verifies credentials and issues a JWT.
 Frontend stores the token and user data.
 
 
-Protected Routes:
+### Protected Routes:
 
 Frontend includes the JWT in the Authorization: Bearer <token> header for API requests.
 Backend verifies the token using authMiddleware before granting access.
 
 
-Logout:
+### Logout:
 
 Frontend clears localStorage via AuthContext.
 User is redirected to the login page.
 
 
 
-Usage
+### Usage
 
-Run the Application:
-
+### Run the Application:
+```bash
 Start the backend: cd server && npm run start
 Start the frontend: cd client && npm run dev
 Access the app at http://localhost:5173.
+```
 
 
-Test Authentication:
+### Test Authentication:
 
 Register: Create a new account with email, password, and role.
 Login: Use valid credentials to authenticate.
@@ -508,22 +514,33 @@ Protected Routes: Access /api/protected with the JWT in the header (requires bac
 
 
 Example API Request:
+```bash
 curl --request GET \
   --url "http://localhost:5000/api/protected" \
   --header "Authorization: Bearer YOUR_TOKEN"
+```
 
 
 
-Contributing
+### Contributing
 
 Fork the repository.
-Create a feature branch:git checkout -b feature/your-feature
+Create a feature branch:
+```bash
+git checkout -b feature/your-feature
+```
 
 
-Commit changes:git commit -m "Add your feature"
+Commit changes:
+```bash
+git commit -m "Add your feature"
+```
 
 
-Push to the branch:git push origin feature/your-feature
+Push to the branch:
+```bash
+git push origin feature/your-feature
+```
 
 
 Open a pull request.

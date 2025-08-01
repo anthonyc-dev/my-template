@@ -49,12 +49,18 @@ The Token-Based Authentication (V1) project is a full-stack authentication syste
    ```
 
 
-Install dependencies:npm install
+### Install dependencies
+   ```bash
+    npm install
+   ```
+or
 
-oryarn install
+   ```bash
+   yarn install
+   ```
 
 
-Set up environment variables:Create a .env file in the client directory:VITE_API_URL=http://localhost:5000/api
+###Set up environment variables:Create a .env file in the client directory:VITE_API_URL=http://localhost:5000/api
 
 
 Start the development server:npm run dev

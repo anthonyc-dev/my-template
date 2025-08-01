@@ -46,6 +46,7 @@ The Token-Based Authentication (V1) project is a full-stack authentication syste
    ```bash
    git clone https://github.com/anthonyc-dev/my-template.git
    cd my-template/token-based-authentication-v1/client
+   ```
 
 
 Install dependencies:npm install

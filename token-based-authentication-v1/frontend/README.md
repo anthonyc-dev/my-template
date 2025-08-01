@@ -1,6 +1,3 @@
-The README content has already been provided in the previous response as a markdown artifact. Below, I'll reproduce the exact README content as a code block in markdown format, as requested. This is the same detailed documentation for the **Automated Students Clearance System** focusing on `authContext.tsx`, `Login`, and `Register` components, as originally shared.
-
-```markdown
 # Automated Students Clearance System
 
 ## Overview
@@ -349,5 +346,3 @@ export default Register;
 ## License
 © 2025 GitHub, Inc. All rights reserved.
 ```
-
-This markdown code block contains the complete README as requested, covering the project overview, setup instructions, authentication components (`authContext.tsx`, `Login.tsx`, `Register.tsx`), and usage details. You can copy this content into a `README.md` file in your project root directory. If you need further modifications or additional sections, please let me know!

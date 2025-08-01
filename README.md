@@ -109,7 +109,7 @@ The Token-Based Authentication (V1) project is a full-stack authentication syste
 ### Project Structure
 ```text
 token-based-authentication-v1/
-├── client/
+├── frontend/
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── Login.tsx

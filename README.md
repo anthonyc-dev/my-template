@@ -543,7 +543,6 @@ git push origin feature/your-feature
 ```
 
 
-Open a pull request.
-
-License
-© 2025 GitHub, Inc. All rights reserved.```
+---
+## Credits
+- Developed by **[Anthony Crausus](https://github.com/anthonyc-dev)**
